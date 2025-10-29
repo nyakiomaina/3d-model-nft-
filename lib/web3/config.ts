@@ -29,7 +29,7 @@ export const SCROLL_SEPOLIA_CONFIG = {
 // ============================================
 // After deploying the VibeRoomNFT.sol contract to Scroll Mainnet,
 // replace the address below with your deployed contract address
-export const VIBE_ROOM_NFT_ADDRESS = "0x0000000000000000000000000000000000000000" // <-- PASTE YOUR CONTRACT ADDRESS HERE
+export const VIBE_ROOM_NFT_ADDRESS = "0x28e831e506c645d255a9a2f68cf273eb47ea63c8" // <-- PASTE YOUR CONTRACT ADDRESS HERE
 
 // Mint price: 0.00006 ETH
 export const MINT_PRICE = "0.00006"
