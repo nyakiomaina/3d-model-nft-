@@ -32,7 +32,6 @@ export function RoomGallery() {
       const fetchedRooms = await getAllRooms()
       setRooms(fetchedRooms)
     } catch (err) {
-      console.error("[v0] Error loading rooms:", err)
       setError("Failed to load rooms. Please try again.")
     } finally {
       setLoading(false)

@@ -10,53 +10,47 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg shadow-primary/5 animate-fade-in-down">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg shadow-primary/5">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group animate-slide-in-left">
-            <div className="relative">
-              <Cube className="h-8 w-8 text-primary transition-all duration-500 ease-out group-hover:rotate-[360deg] group-hover:scale-125 drop-shadow-[0_0_12px_rgba(0,180,255,0.6)]" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent transition-all duration-300 group-hover:tracking-wider">
-              VibeVerse
+          <Link href="/" className="flex items-center gap-2 group">
+            <Cube className="h-7 w-7 text-primary transition-all duration-300 group-hover:rotate-12" />
+            <span className="text-xl font-bold text-foreground">
+              Vibe<span className="text-primary">Verse</span>
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              href="#features"
-              className="relative text-foreground/70 hover:text-primary transition-all duration-300 font-medium group animate-fade-in delay-100"
+              href="/"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
-              Features
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
+              Home
+            </Link>
+            <Link
+              href="#features"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+              Why 3D NFTs
             </Link>
             <Link
               href="#how-it-works"
-              className="relative text-foreground/70 hover:text-primary transition-all duration-300 font-medium group animate-fade-in delay-200"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
-              How It Works
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
+              Pricing
             </Link>
             <Link
               href="/explore"
-              className="relative text-foreground/70 hover:text-primary transition-all duration-300 font-medium group animate-fade-in delay-300"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
-              Explore
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-            <Link
-              href="/create"
-              className="relative text-foreground/70 hover:text-primary transition-all duration-300 font-medium group animate-fade-in delay-400"
-            >
-              Create
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-purple-500 transition-all duration-300 group-hover:w-full rounded-full"></span>
+              How It Works
             </Link>
           </div>
 
           {/* Wallet Connect Button */}
-          <div className="hidden md:block animate-slide-in-right">
+          <div className="hidden md:block">
             <WalletConnectButton />
           </div>
 
@@ -64,7 +58,7 @@ export function Navigation() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden hover:bg-primary/10 transition-all duration-300 hover:scale-110"
+            className="md:hidden hover:bg-primary/10 transition-all duration-300"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -74,35 +68,35 @@ export function Navigation() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-card/95 backdrop-blur-xl border-t border-border/50 shadow-lg animate-fade-in-down">
+        <div className="md:hidden bg-card/95 backdrop-blur-xl border-t border-border">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             <Link
-              href="#features"
-              className="text-foreground/70 hover:text-primary transition-all duration-300 font-medium py-2 hover:translate-x-2 hover:pl-2"
+              href="/"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Features
+              Home
+            </Link>
+            <Link
+              href="#features"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Why 3D NFTs
             </Link>
             <Link
               href="#how-it-works"
-              className="text-foreground/70 hover:text-primary transition-all duration-300 font-medium py-2 hover:translate-x-2 hover:pl-2"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              How It Works
+              Pricing
             </Link>
             <Link
               href="/explore"
-              className="text-foreground/70 hover:text-primary transition-all duration-300 font-medium py-2 hover:translate-x-2 hover:pl-2"
+              className="text-muted-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Explore
-            </Link>
-            <Link
-              href="/create"
-              className="text-foreground/70 hover:text-primary transition-all duration-300 font-medium py-2 hover:translate-x-2 hover:pl-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Create
+              How It Works
             </Link>
             <div className="pt-2 border-t border-border/50">
               <WalletConnectButton />

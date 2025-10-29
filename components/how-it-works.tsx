@@ -26,8 +26,12 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 bg-card/50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="how-it-works" className="py-20 bg-card/50 relative overflow-hidden">
+      <div className="absolute right-0 bottom-0 w-1/2 h-1/2 opacity-30 pointer-events-none">
+        <img src="/isometric-3d-blockchain-server-nodes-glowing-cyan-.jpg" alt="" className="w-full h-full object-contain" />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 neon-text">How It Works</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-pretty">

@@ -73,10 +73,7 @@ export function MintRoomDialog({ open, onOpenChange, objects }: MintRoomDialogPr
         }
         existingRooms.push(newRoom)
         localStorage.setItem("vibeverse_rooms", JSON.stringify(existingRooms))
-        console.log("[v0] Room saved to localStorage for explore page")
-      } catch (e) {
-        console.error("[v0] Error saving to localStorage:", e)
-      }
+      } catch (e) {}
     } else {
       setStatus("error")
       setErrorMessage("Failed to mint NFT. Please try again.")

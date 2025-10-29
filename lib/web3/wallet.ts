@@ -38,7 +38,6 @@ async function initWalletConnect() {
 
     return walletConnectProvider
   } catch (error) {
-    console.error("Error initializing WalletConnect:", error)
     return null
   }
 }
@@ -88,7 +87,6 @@ async function connectWithMetaMask(): Promise<string | null> {
     localStorage.setItem("walletProvider", "metamask")
     return accounts[0]
   } catch (error) {
-    console.error("Error connecting MetaMask:", error)
     return null
   }
 }
@@ -107,7 +105,6 @@ async function connectWithWalletConnect(): Promise<string | null> {
     localStorage.setItem("walletProvider", "walletconnect")
     return accounts[0] || null
   } catch (error) {
-    console.error("Error connecting WalletConnect:", error)
     return null
   }
 }
@@ -134,7 +131,6 @@ export async function getConnectedAccount(): Promise<string | null> {
     })
     return accounts[0] || null
   } catch (error) {
-    console.error("Error getting account:", error)
     return null
   }
 }
