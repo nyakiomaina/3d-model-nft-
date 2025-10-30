@@ -110,7 +110,7 @@ export async function getAllRooms(): Promise<Room[]> {
           description: `A ${room.colorTheme} themed room`,
           objects,
           createdAt: new Date(room.timestamp).toISOString(),
-          creatorAddress: "0x000000000000000000000000000000000000000",
+          creatorAddress: "0x0000000000000000000000000000000000000000",
           nftTokenId: room.id || index.toString(),
         }
       })
