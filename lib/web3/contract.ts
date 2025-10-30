@@ -1,7 +1,8 @@
 "use client"
 
 import { ethers } from "ethers"
-import { VIBE_ROOM_NFT_ADDRESS, MINT_PRICE } from "./config"
+import { VIBE_ROOM_NFT_ADDRESS, MINT_PRICE, SCROLL_MAINNET_CONFIG } from "./config"
+import { getCurrentProvider } from "./wallet"
 import type { Room } from "@/types/room"
 
 export const VIBE_ROOM_ABI = [
@@ -11,7 +12,7 @@ export const VIBE_ROOM_ABI = [
   "function balanceOf(address owner) public view returns (uint256)",
   "function totalSupply() public view returns (uint256)",
   "function getMintPrice() public pure returns (uint256)",
-  "function getRoomData(uint256 tokenId) public view returns (string memory roomName, string memory colorTheme, string memory metadata, uint256 timestamp)",
+  "function getRoomData(uint256 tokenId) public view returns ((string roomName, string colorTheme, string metadata, address creator, uint256 timestamp))",
   "event RoomMinted(address indexed owner, uint256 indexed tokenId, string roomName)",
 ]
 
@@ -23,13 +24,43 @@ export interface RoomData {
 }
 
 export async function mintRoomNFT(roomData: RoomData): Promise<string | null> {
-  if (typeof window.ethereum === "undefined") {
+  const injected = getCurrentProvider()
+  if (!injected) {
     alert("Please install MetaMask!")
     return null
   }
 
   try {
-    const provider = new ethers.BrowserProvider(window.ethereum)
+    const provider = new ethers.BrowserProvider(injected)
+    // Ensure Scroll Mainnet is selected
+    const currentNetwork = await provider.getNetwork()
+    if (Number(currentNetwork.chainId) !== SCROLL_MAINNET_CONFIG.chainId) {
+      try {
+        await (injected as any).request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${SCROLL_MAINNET_CONFIG.chainId.toString(16)}` }],
+        })
+      } catch (switchError) {
+        // 4902 = Unrecognized chain, try to add it
+        // @ts-ignore
+        if (switchError && switchError.code === 4902) {
+          await (injected as any).request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${SCROLL_MAINNET_CONFIG.chainId.toString(16)}`,
+                chainName: SCROLL_MAINNET_CONFIG.chainName,
+                nativeCurrency: SCROLL_MAINNET_CONFIG.nativeCurrency,
+                rpcUrls: SCROLL_MAINNET_CONFIG.rpcUrls,
+                blockExplorerUrls: SCROLL_MAINNET_CONFIG.blockExplorerUrls,
+              },
+            ],
+          })
+        } else {
+          throw new Error("Please switch to Scroll Mainnet to mint.")
+        }
+      }
+    }
     const signer = await provider.getSigner()
     const contract = new ethers.Contract(VIBE_ROOM_NFT_ADDRESS, VIBE_ROOM_ABI, signer)
 
@@ -64,6 +95,7 @@ export async function mintRoomNFT(roomData: RoomData): Promise<string | null> {
 
     return tx.hash
   } catch (error) {
+    console.error("Mint error", error)
     return null
   }
 }

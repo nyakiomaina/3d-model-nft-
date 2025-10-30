@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Wallet, Smartphone, Chrome } from "lucide-react"
-import { connectWallet, getConnectedAccount, disconnectWallet } from "@/lib/web3/wallet"
+import { connectWallet, getConnectedAccount, disconnectWallet, getCurrentProvider } from "@/lib/web3/wallet"
+import { useToast } from "@/hooks/use-toast"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,18 +16,28 @@ import {
 export function WalletConnectButton() {
   const [account, setAccount] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     checkConnection()
 
-    if (typeof window.ethereum !== "undefined") {
-      window.ethereum.on("accountsChanged", (accounts: string[]) => {
+    const eth: any = getCurrentProvider()
+    if (eth && typeof eth.on === "function") {
+      const handleAccountsChanged = (accounts: string[]) => {
         setAccount(accounts[0] || null)
-      })
-
-      window.ethereum.on("chainChanged", () => {
+      }
+      const handleChainChanged = () => {
         window.location.reload()
-      })
+      }
+      eth.on("accountsChanged", handleAccountsChanged)
+      eth.on("chainChanged", handleChainChanged)
+
+      return () => {
+        try {
+          eth.removeListener && eth.removeListener("accountsChanged", handleAccountsChanged)
+          eth.removeListener && eth.removeListener("chainChanged", handleChainChanged)
+        } catch {}
+      }
     }
   }, [])
 
@@ -37,9 +48,27 @@ export function WalletConnectButton() {
 
   async function handleConnect(provider: "metamask" | "walletconnect") {
     setIsConnecting(true)
-    const connectedAccount = await connectWallet(provider)
-    setAccount(connectedAccount)
-    setIsConnecting(false)
+    try {
+      const connectedAccount = await connectWallet(provider)
+      if (!connectedAccount) {
+        throw new Error(
+          provider === "metamask"
+            ? "Failed to connect to browser wallet. Ensure MetaMask is installed and unlocked."
+            : "Failed to connect via WalletConnect. Please try again."
+        )
+      }
+      setAccount(connectedAccount)
+    } catch (e: any) {
+      const message = e?.message || "Wallet connection failed. Please try again."
+      toast({
+        title: "Connection error",
+        description: message,
+        variant: "destructive",
+      })
+      console.error("Wallet connect error:", e)
+    } finally {
+      setIsConnecting(false)
+    }
   }
 
   async function handleDisconnect() {

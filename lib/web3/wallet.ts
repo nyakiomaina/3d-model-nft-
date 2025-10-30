@@ -8,6 +8,33 @@ export type WalletProvider = "metamask" | "walletconnect"
 
 let walletConnectProvider: any = null
 
+function selectInjectedMetaMask(): any | null {
+  if (typeof window === "undefined") return null
+  const eth: any = (window as any).ethereum
+  if (!eth) return null
+  // Prefer a true MetaMask provider (exclude Rabby/others that spoof isMetaMask)
+  if (Array.isArray(eth.providers) && eth.providers.length > 0) {
+    const strictMetaMask = eth.providers.find(
+      (p: any) => p && p.isMetaMask && !p.isRabby && typeof p._metamask === "object"
+    )
+    if (strictMetaMask) return strictMetaMask
+
+    const nonRabbyMetaMask = eth.providers.find((p: any) => p && p.isMetaMask && !p.isRabby)
+    if (nonRabbyMetaMask) return nonRabbyMetaMask
+
+    const anyMetaMask = eth.providers.find((p: any) => p && p.isMetaMask)
+    if (anyMetaMask) return anyMetaMask
+
+    return eth.providers[0]
+  }
+
+  // Single provider case
+  if (eth.isMetaMask && !eth.isRabby) return eth
+  // If it's Rabby (spoofs isMetaMask), avoid selecting it so we can fall back to WC
+  if (eth.isRabby) return null
+  return eth
+}
+
 async function initWalletConnect() {
   if (typeof window === "undefined") return null
 
@@ -50,24 +77,25 @@ export async function connectWallet(provider: WalletProvider = "metamask"): Prom
 }
 
 async function connectWithMetaMask(): Promise<string | null> {
-  if (typeof window.ethereum === "undefined") {
+  const eth = selectInjectedMetaMask()
+  if (!eth) {
     alert("Please install MetaMask or use WalletConnect for mobile wallets!")
     return null
   }
 
   try {
-    const accounts = await window.ethereum.request({
+    const accounts = await eth.request({
       method: "eth_requestAccounts",
     })
 
     try {
-      await window.ethereum.request({
+      await eth.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: `0x${SCROLL_MAINNET_CONFIG.chainId.toString(16)}` }],
       })
     } catch (switchError: any) {
       if (switchError.code === 4902) {
-        await window.ethereum.request({
+        await eth.request({
           method: "wallet_addEthereumChain",
           params: [
             {
@@ -121,12 +149,10 @@ export async function getConnectedAccount(): Promise<string | null> {
     }
   }
 
-  if (typeof window.ethereum === "undefined") {
-    return null
-  }
-
   try {
-    const accounts = await window.ethereum.request({
+    const eth = selectInjectedMetaMask()
+    if (!eth) return null
+    const accounts = await eth.request({
       method: "eth_accounts",
     })
     return accounts[0] || null
@@ -151,7 +177,7 @@ export function getCurrentProvider() {
   if (savedProvider === "walletconnect" && walletConnectProvider) {
     return walletConnectProvider
   }
-  return window.ethereum
+  return selectInjectedMetaMask() || (window as any).ethereum
 }
 
 declare global {
